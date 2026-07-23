@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch for Sunshine trigger files
+
+[Path]
+PathModified=/home/deck/.trigger-gamescope-set
+PathModified=/home/deck/.trigger-gamescope-unset
+
+[Install]
+WantedBy=default.target

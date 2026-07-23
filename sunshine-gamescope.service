@@ -1,0 +1,6 @@
+[Unit]
+Description=Run Sunshine Gamescope Script
+
+[Service]
+Type=oneshot
+ExecStart=/home/deck/manage-gamescope.sh
