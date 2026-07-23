@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# --- 1. Systemd Headless Environment Injection ---
+# The Gamescope config file for screen resolutions
+CFG_FILE="/home/deck/.config/gamescope/modes.cfg"
+
+# --- Systemd Headless Environment Injection ---
 STEAM_PID=$(pgrep -u deck -x steam | head -n 1)
 if [ -n "$STEAM_PID" ]; then
     export $(tr '\0' '\n' < /proc/$STEAM_PID/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|DBUS_SESSION_BUS_ADDRESS|XDG_RUNTIME_DIR)=')
 fi
-
-CFG_FILE="/home/deck/.config/gamescope/modes.cfg"
 
 if [ -f "/home/deck/.trigger-gamescope-set" ]; then
     ACTION="set"
@@ -18,7 +19,7 @@ else
     exit 0
 fi
 
-# --- 2. Action: SET ---
+# --- Action: SET ---
 if [ "$ACTION" == "set" ]; then
     PORT_PATH=""
     for p in /sys/class/drm/*-HDMI-A-1; do
@@ -58,7 +59,7 @@ if [ "$ACTION" == "set" ]; then
         gamescopectl backend_set_dirty
     fi
 
-# --- 3. Action: UNSET ---
+# --- Action: UNSET ---
 elif [ "$ACTION" == "unset" ]; then
     if [ -f "$CFG_FILE" ] && grep -q "#autoset" "$CFG_FILE"; then
         grep "#autoset" "$CFG_FILE" | awk -F':' '{print $1}' | sort -u | while read -r MONITOR_NAME; do
