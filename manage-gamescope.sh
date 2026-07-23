@@ -3,15 +3,17 @@
 # The Gamescope config file for screen resolutions
 CFG_FILE="/home/deck/.config/gamescope/modes.cfg"
 
-# --- Systemd Headless Environment Injection ---
+# Systemd Headless Environment Injection
 STEAM_PID=$(pgrep -u deck -x steam | head -n 1)
 if [ -n "$STEAM_PID" ]; then
     export $(tr '\0' '\n' < /proc/$STEAM_PID/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|DBUS_SESSION_BUS_ADDRESS|XDG_RUNTIME_DIR)=')
 fi
 
+# Decide what action to take ( SET || UNSET )
 if [ -f "/home/deck/.trigger-gamescope-set" ]; then
     ACTION="set"
     rm -f "/home/deck/.trigger-gamescope-set"
+    rm -f "/home/deck/.trigger-gamescope-unset" # ensure sure this isn't present after SET
 elif [ -f "/home/deck/.trigger-gamescope-unset" ]; then
     ACTION="unset"
     rm -f "/home/deck/.trigger-gamescope-unset"
@@ -50,20 +52,20 @@ if [ "$ACTION" == "set" ]; then
             fi
         fi
 
-        MONITOR_NAME="$FULL_MFG $MODEL_NAME"
+        DISPLAY_NAME="$FULL_MFG $MODEL_NAME"
         mkdir -p "$(dirname "$CFG_FILE")"
         touch "$CFG_FILE"
-        ESCAPED_NAME=$(echo "$MONITOR_NAME" | sed 's/\./\\./g')
+        ESCAPED_NAME=$(echo "$DISPLAY_NAME" | sed 's/\./\\./g')
         sed -i "s/^${ESCAPED_NAME}/#&/" "$CFG_FILE"
-        echo "${MONITOR_NAME}:1280x800@60 0 #autoset" >> "$CFG_FILE"
+        echo "${DISPLAY_NAME}:1280x800@60 0 #autoset" >> "$CFG_FILE"
         gamescopectl backend_set_dirty
     fi
 
 # --- Action: UNSET ---
 elif [ "$ACTION" == "unset" ]; then
     if [ -f "$CFG_FILE" ] && grep -q "#autoset" "$CFG_FILE"; then
-        grep "#autoset" "$CFG_FILE" | awk -F':' '{print $1}' | sort -u | while read -r MONITOR_NAME; do
-            ESCAPED_NAME=$(echo "$MONITOR_NAME" | sed 's/\./\\./g')
+        grep "#autoset" "$CFG_FILE" | awk -F':' '{print $1}' | sort -u | while read -r DISPLAY_NAME; do
+            ESCAPED_NAME=$(echo "$DISPLAY_NAME" | sed 's/\./\\./g')
             sed -i "s/^#\(${ESCAPED_NAME}\)/\1/" "$CFG_FILE"
         done
         sed -i '/#autoset/d' "$CFG_FILE"
