@@ -17,11 +17,11 @@ fi
 
 # Find all unique display names with #autoset, and process them one by one
 # awk extracts the name, sort -u ensures we only process each entry once
-grep "#autoset" "$CFG_FILE" | awk -F':' '{print $1}' | sort -u | while read -r MONITOR_NAME; do
-    echo "Processing restores for: $MONITOR_NAME"
+grep "#autoset" "$CFG_FILE" | awk -F':' '{print $1}' | sort -u | while read -r DISPLAY_NAME; do
+    echo "Processing restores for: $DISPLAY_NAME"
     
     # Escape any periods in the monitor name so sed treats them literally
-    ESCAPED_NAME=$(echo "$MONITOR_NAME" | sed 's/\./\\./g')
+    ESCAPED_NAME=$(echo "$DISPLAY_NAME" | sed 's/\./\\./g')
 
     # Look for lines starting with a hash followed by the exact display name,
     # and replace it with just the monitor name (removing the hash).
