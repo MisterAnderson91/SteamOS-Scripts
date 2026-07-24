@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the desired game mode display --- e.g. DP-1 or HDMI-A-1
-GAME_MODE_DISPLAY="HDMI-B-1"
+GAME_MODE_DISPLAY="HDMI-A-1"
 
 # Path to the original script
 ORIGINAL_SCRIPT="/usr/lib/steamos/gamescope-session"
